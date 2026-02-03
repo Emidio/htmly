@@ -14,7 +14,8 @@
 		"jbroadway/urlify": "^1.0",
 		"pragmarx/google2fa": "^8.0",
 		"bacon/bacon-qr-code": "^3.0",
-		"phpmailer/phpmailer": "^6.5"
+		"phpmailer/phpmailer": "^6.5",
+		"matomo/matomo-php-tracker": "^3.4"
     },
 	"autoload": {
 		"files": [

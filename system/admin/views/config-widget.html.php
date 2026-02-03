@@ -209,6 +209,69 @@
       <small><em><?php echo i18n('For_msvalidate_01_meta');?></em></small>
     </div>
   </div>
+  
+  
+  <br>
+  <h4><?php echo i18n('Matomo_Analytics');?></h4>
+  <hr>
+  <div class="form-group row">
+    <label for="matomo.site.id" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Site_Id');?></label>
+    <div class="col-sm-10">
+      <input type="text" name="-config-matomo.site.id" class="form-control" id="matomo.site.id" value="<?php echo valueMaker(config('matomo.site.id'));?>" placeholder="<?php echo i18n('widget_key_placeholder');?>">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="matomo-url" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Url');?></label>
+    <div class="col-sm-10">
+      <input type="text" name="-config-matomo.url" class="form-control" id="matomo.url" value="<?php echo valueMaker(config('matomo.url'));?>" placeholder="<?php echo i18n('widget_key_placeholder');?>">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Track_Type');?></label>
+    <div class="col-sm-10">
+      <div class="col-sm-10">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="-config-matomo.track.type" id="matomo.track.type1" value="js" <?php if (config('matomo.track.type') === 'js'):?>checked<?php endif;?>>
+          <label class="form-check-label" for="matomo.track.type1">
+            <?php echo i18n('matomo_track_type_js');?>
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="-config-matomo.track.type" id="matomo.track.type2" value="php" <?php if (config('matomo.track.type') === 'php' || is_null(config('matomo.type'))):?>checked<?php endif;?>>
+          <label class="form-check-label" for="matomo.track.type2">
+            <?php echo i18n('matomo_track_type_php');?>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="matomo-authtoken" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_AuthToken');?></label>
+    <div class="col-sm-10">
+      <input type="text" name="-config-matomo.authtoken" class="form-control" id="matomo.authtoken" value="<?php echo valueMaker(config('matomo.authtoken'));?>" placeholder="<?php echo i18n('widget_key_placeholder');?>">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Track_Type');?></label>
+    <div class="col-sm-10">
+      <div class="col-sm-10">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="-config-matomo.cookies" id="matomo.cookies.use1" value="js" <?php if (config('matomo.cookies') === 'no'):?>checked<?php endif;?>>
+          <label class="form-check-label" for="matomo.cookies.use1">
+            <?php echo i18n('matomo_track_type_js');?>
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="-config-matomo.cookies" id="matomo.cookies.use2" value="php" <?php if (config('matomo.cookies') === 'yes' || is_null(config('matomo.cookies'))):?>checked<?php endif;?>>
+          <label class="form-check-label" for="matomo.cookies.use2">
+            <?php echo i18n('matomo_track_type_php');?>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
   <br>
   <h4><?php echo i18n('Social_Media');?></h4>
   <hr>

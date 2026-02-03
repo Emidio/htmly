@@ -73,6 +73,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'matomo/matomo-php-tracker' => array(
+            'pretty_version' => '3.4.0',
+            'version' => '3.4.0.0',
+            'reference' => '9462dc6eb718c711545ea1b0f590b9ae892a4212',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../matomo/matomo-php-tracker',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'michelf/php-markdown' => array(
             'pretty_version' => '1.9.1',
             'version' => '1.9.1.0',

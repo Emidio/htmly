@@ -2697,6 +2697,93 @@ EOF;
     }
 }
 
+
+// Matomo Analytics
+function matomo($metadata, $locals = null)
+{
+    $matomo_url = config('matomo.url');
+    $matomo_id = config('matomo.site.id');
+    $matomo_track_type = config('matomo.track.type');
+    if (config('matomo.cookies') == 'no') { 
+        $matomo_nocookies = "_paq.push(['disableCookies']);";
+    }
+    else {
+        $matomo_nocookies = "";
+    }
+
+    
+    if ($matomo_url && $matomo_id) {
+        if ($matomo_track_type == "js") {
+            $script = "
+                <!-- Matomo -->
+                <script>
+                  var _paq = window._paq = window._paq || [];
+                  /* tracker methods like \"setCustomDimension\" should be called before \"trackPageView\" */
+                  _paq.push(['trackPageView']);
+                  _paq.push(['enableLinkTracking']);
+                  (function() {
+                    var u=\"" . slashUrl($matomo_url) . "\";
+                    _paq.push(['setTrackerUrl', u+'matomo.php']);
+                    _paq.push(['setSiteId', '" . $matomo_id . "']);
+                    " . $matomo_nocookies . "
+                    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+                  })();
+                </script>
+                <!-- End Matomo Code -->
+            ";
+            return $script;
+        }
+        else {
+            include_once('system/vendor/matomo/matomo-php-tracker/MatomoTracker.php');
+            
+            // Initialize tracker
+            $t = new MatomoTracker((int)config('matomo.site.id'), config('matomo.url'));
+
+            // Optional: Set auth token (required for some features like custom IP or user ID)
+            $t->setTokenAuth(config('matomo.authtoken'));
+            
+            if ($locals) {
+                $metadata = generate_meta_info($locals);
+            }
+
+            $pagePrefix = $metadata['prefix'] ?? '';
+            $pageTitle = trim($pagePrefix . $metadata['title']);
+
+            if (substr($pageTitle, -strlen(' - ' . blog_title())) === ' - ' . blog_title()) {
+                $pageTitle = substr($pageTitle, 0, -strlen(' - ' . blog_title()));
+            }
+
+            $t->setIp(client_ip());
+            if (config('matomo.cookies') == 'no') {
+                $t->disableCookieSupport();
+            }
+
+            // Track page view
+            $t->doTrackPageView($pageTitle);
+            
+            return "";
+        }
+    }
+}
+
+
+function flattenMenu(array $items, array &$flat = []): array
+{
+    foreach ($items as $item) {
+        // keep only slug + name
+        if ($item['slug'] != "#") {
+            $flat[$item['slug']] = $item['name'];
+        }
+        // recurse into children
+        if (!empty($item['children']) && is_array($item['children'])) {
+            flattenMenu($item['children'], $flat);
+        }
+    }
+    return $flat;
+}
+
+
 function slashUrl($url)
 {
     return rtrim($url, '/') . '/';
@@ -3668,7 +3755,24 @@ function file_cache($request)
     if (file_exists($cachefile)) {
         if ($now - filemtime($cachefile) >= 60 * 60 * $hour) {
             unlink($cachefile);
+            // Removes also metadata cache file
+            $metafile = $cachefile . '.meta.json';
+            if (file_exists($metafile)) {
+                unlink($metafile);
+            }
         } else {
+            // Loads metadata before serving cache file
+            $metafile = $cachefile . '.meta.json';
+            $cache_metadata = array();
+            if (file_exists($metafile)) {
+                $cache_metadata = json_decode(file_get_contents($metafile), true);
+            }
+
+            // if Matomo analytics backend is active
+            if (config('matomo.url') && config('matomo.site.id') && config('matomo.track.type') == 'php') {
+                matomo($cache_metadata);
+            }
+
             header('Content-type: text/html; charset=utf-8');
             readfile($cachefile);
             die;

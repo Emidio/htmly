@@ -437,6 +437,183 @@ function content($value = null)
     return stash('$content$', $value);
 }
 
+// Normalize cache metadata type
+function normalize_titles_type($type, $canonical = null)
+{
+    // Map internal types to simple types
+    $type_map = array(
+        'blogPost' => 'post',
+        'imagePost' => 'post',
+        'videoPost' => 'post',
+        'linkPost' => 'post',
+        'quotePost' => 'post',
+        'audioPost' => 'post',
+        'is_frontpage' => 'frontpage',
+        'is_tag' => 'tag',
+        'is_profile' => 'profile',
+        'is_category' => 'category',
+        'is_page' => 'page',
+        'is_subpage' => 'page',
+        'is_archive' => 'archive',
+        'is_search' => 'search'
+    );
+
+    $subtype_map = array(
+        'blogPost' => 'post',
+        'imagePost' => 'image',
+        'videoPost' => 'video',
+        'linkPost' => 'link',
+        'quotePost' => 'quote',
+        'audioPost' => 'audio',
+        'is_frontpage' => 'frontpage',
+        'is_tag' => '',
+        'is_profile' => '',
+        'is_category' => '',
+        'is_page' => '',
+        'is_subpage' => 'subpage',
+        'is_archive' => '',
+        'is_search' => ''
+    );
+
+    $type_prefix = array(
+        'blogPost' => '',
+        'imagePost' => '',
+        'videoPost' => '',
+        'linkPost' => '',
+        'quotePost' => '',
+        'audioPost' => '',
+        'is_frontpage' => i18n('Home') . ': ',
+        'is_tag' => i18n('Tag') . ': ',
+        'is_profile' => i18n('Author') . ': ',
+        'is_category' => i18n('Category') . ': ',
+        'is_page' => '',
+        'is_subpage' => '',
+        'is_archive' => i18n('Archives') . ': ',
+        'is_search' => i18n('Search') . ': '
+    );
+
+    // Return mapped type if found
+    if (isset($type_map[$type])) {
+        $return_type['type'] = $type_map[$type];
+        $return_type['subtype'] = $subtype_map[$type];
+        $return_type['prefix'] = $type_prefix[$type];
+        return $return_type;
+    }
+
+    // Try to derive from canonical URL
+    if ($canonical) {
+        $parsed = parse_url($canonical);
+        if (isset($parsed['path'])) {
+            $path = trim($parsed['path'], '/');
+            $segments = explode('/', $path);
+
+            // Get first segment after site path
+            $site_path = trim(site_path(), '/');
+            if (!empty($site_path) && isset($segments[0]) && $segments[0] === $site_path) {
+                array_shift($segments);
+            }
+
+            if (!empty($segments)) {
+                $first_segment = $segments[0];
+
+                // Check known URL patterns
+                if ($first_segment === 'tag') {
+                    $return_type['type'] = 'tag';
+                    $return_type['subtype'] = '';
+                    $return_type['prefix'] = 'Tag: ';
+                    return $return_type;
+                }
+                if ($first_segment === 'author') {
+                    $return_type['type'] = 'profile';
+                    $return_type['subtype'] = '';
+                    $return_type['prefix'] = 'Profile: ';
+                    return $return_type;
+                }
+                if ($first_segment === 'category') {
+                    $return_type['type'] = 'category';
+                    $return_type['subtype'] = '';
+                    $return_type['prefix'] = 'Category: ';
+                    return $return_type;
+                }
+                if ($first_segment === 'archive') {
+                    $return_type['type'] = 'archive';
+                    $return_type['subtype'] = '';
+                    $return_type['prefix'] = 'Archive: ';
+                    return $return_type;
+                }
+                if ($first_segment === 'search') {
+                    $return_type['type'] = 'search';
+                    $return_type['subtype'] = '';
+                    $return_type['prefix'] = 'Search: ';
+                    return $return_type;
+                }
+
+                // If it's a date pattern (YYYY/MM), it's a post
+                if (preg_match('/^\d{4}$/', $first_segment)) {
+                    $return_type['type'] = 'post';
+                    $return_type['subtype'] = '';
+                    $return_type['prefix'] = '';
+                    return $return_type;
+                }
+            }
+        }
+    }
+
+    // Default to page for unknown types
+    $return_type['type'] = 'page';
+    $return_type['subtype'] = '';
+    $return_type['prefix'] = '';
+    return $return_type;
+}
+
+
+function generate_meta_info($locals) {
+    if (is_array($locals) && count($locals)) {
+        extract($locals, EXTR_SKIP);
+    }
+    
+    // Normalize type
+    $normalized_type = normalize_titles_type(
+        isset($type) ? $type : null,
+        isset($canonical) ? $canonical : null
+    );
+    
+    // Extract menu name from static page or canonical URL
+    $filename = "content/data/menu.json";
+    if (file_exists($filename)) {
+        $menu_content = file_get_data($filename) ;
+        $menu_flat = flattenMenu(json_decode(json_decode($menu_content, true), true));
+    }
+
+    // Get language from config
+    $language = config('language');
+    
+    if (isset($canonical)) {
+        $slug = parse_url($canonical, PHP_URL_PATH);
+    }
+    else {
+        $slug = '';    
+    }
+    
+    // Save metadata in separate cache file
+    // $metafile = $cachefile . '.meta.json';
+    $metadata = array(
+        'title' => isset($title) ? $title : null,
+        'prefix' => $normalized_type['prefix'],
+        'description' => isset($description) ? $description : '',
+        'canonical' => isset($canonical) ? $canonical : '',
+        'slug' => $slug,
+        'author' => isset($author) ? $author->name : '',
+        'type' => $normalized_type['type'],
+        'subtype' => $normalized_type['subtype'],
+        'menu' => isset($menu_flat[$slug]) ? $menu_flat[$slug] : '',
+        'language' => $language
+    );
+
+    return $metadata;
+}
+
+
 function render($view, $locals = null, $layout = null)
 {
     if (!login()) {
@@ -487,8 +664,14 @@ function render($view, $locals = null, $layout = null)
             if (config('cache.timestamp') == 'true') {
                 echo "\n" . '<!-- Cached page generated on '.date('Y-m-d H:i:s').' -->';
             }
-            if (isset($cachefile))
+            if (isset($cachefile)) {
                 file_put_contents($cachefile, ob_get_contents(), LOCK_EX);
+                
+                // Save metadata in separate cache file
+                $metafile = $cachefile . '.meta.json';
+                $metadata = generate_meta_info($locals);
+                file_put_contents($metafile, json_encode($metadata, JSON_UNESCAPED_UNICODE), LOCK_EX);
+            }
         }
         echo trim(ob_get_clean());
     } else {

@@ -1728,11 +1728,17 @@ function clear_post_cache($post_date, $post_tag, $post_url, $filename, $category
     if (file_exists($p)) {
         unlink($p);
     }
+    if (file_exists($p . '.meta.json')) {
+        unlink($p . '.meta.json');
+    }
 
     // Delete post permalink
     $pp = 'cache/page/' . $b . 'post#' . $post_url . '.cache';
     if (file_exists($pp)) {
         unlink($pp);
+    }
+    if (file_exists($pp . '.meta.json')) {
+        unlink($pp . '.meta.json');
     }
 
     // Delete homepage
@@ -1740,8 +1746,14 @@ function clear_post_cache($post_date, $post_tag, $post_url, $filename, $category
     if (file_exists($yd)) {
         unlink($yd);
     }
+    if (file_exists($yd . '.meta.json')) {
+        unlink($yd . '.meta.json');
+    }
     foreach (glob('cache/page/' . $b . '~*.cache', GLOB_NOSORT) as $file) {
         unlink($file);
+    }
+    foreach (glob('cache/page/' . $b . '~*.cache.meta.json', GLOB_NOSORT) as $filemeta) {
+        unlink($filemeta);
     }
 
     // Delete year
@@ -1749,8 +1761,14 @@ function clear_post_cache($post_date, $post_tag, $post_url, $filename, $category
     if (file_exists($yd)) {
         unlink($yd);
     }
+    if (file_exists($yd . '.meta.json')) {
+        unlink($yd . '.meta.json');
+    }
     foreach (glob('cache/page/' . $b . 'archive#' . $t[0] . '~*.cache', GLOB_NOSORT) as $file) {
         unlink($file);
+    }
+    foreach (glob('cache/page/' . $b . 'archive#' . $t[0] . '~*.cache.meta.json', GLOB_NOSORT) as $filemeta) {
+        unlink($filemeta);
     }
 
     // Delete year-month
@@ -1758,8 +1776,14 @@ function clear_post_cache($post_date, $post_tag, $post_url, $filename, $category
     if (file_exists($yd)) {
         unlink($yd);
     }
+    if (file_exists($yd . '.meta.json')) {
+        unlink($yd . '.meta.json');
+    }
     foreach (glob('cache/page/' . $b . 'archive#' . $t[0] . '-' . $t[1] . '~*.cache', GLOB_NOSORT) as $file) {
         unlink($file);
+    }
+    foreach (glob('cache/page/' . $b . 'archive#' . $t[0] . '-' . $t[1] . '~*.cache.meta.json', GLOB_NOSORT) as $filemeta) {
+        unlink($filemeta);
     }
 
     // Delete year-month-day
@@ -1767,8 +1791,14 @@ function clear_post_cache($post_date, $post_tag, $post_url, $filename, $category
     if (file_exists($yd)) {
         unlink($yd);
     }
+    if (file_exists($yd . '.meta.json')) {
+        unlink($yd . '.meta.json');
+    }
     foreach (glob('cache/page/' . $b . 'archive#' . $t[0] . '-' . $t[1] . '-' . $t[2] . '~*.cache', GLOB_NOSORT) as $file) {
         unlink($file);
+    }
+    foreach (glob('cache/page/' . $b . 'archive#' . $t[0] . '-' . $t[1] . '-' . $t[2] . '~*.cache.meta.json', GLOB_NOSORT) as $filemeta) {
+        unlink($filemeta);
     }
 
     // Delete tag
@@ -1777,8 +1807,14 @@ function clear_post_cache($post_date, $post_tag, $post_url, $filename, $category
         if (file_exists($yd)) {
             unlink($yd);
         }
+        if (file_exists($yd . '.meta.json')) {
+            unlink($yd . '.meta.json');
+        }
         foreach (glob('cache/page/' . $b . 'tag#' . $tag . '~*.cache', GLOB_NOSORT) as $file) {
             unlink($file);
+        }
+        foreach (glob('cache/page/' . $b . 'tag#' . $tag . '~*.cache.meta.json', GLOB_NOSORT) as $filemeta) {
+            unlink($filemeta);
         }
     }
 
@@ -1786,14 +1822,23 @@ function clear_post_cache($post_date, $post_tag, $post_url, $filename, $category
     foreach (glob('cache/page/' . $b . 'search#*.cache', GLOB_NOSORT) as $file) {
         unlink($file);
     }
+    foreach (glob('cache/page/' . $b . 'search#*.cache.meta.json', GLOB_NOSORT) as $filemeta) {
+        unlink($filemeta);
+    }
 
     // Delete category
     $cc = 'cache/page/' . $b . 'category#' . $category . '.cache';
     if (file_exists($cc)) {
         unlink($cc);
     }
+    if (file_exists($cc . '.meta.json')) {
+        unlink($cc . '.meta.json');
+    }
     foreach (glob('cache/page/' . $b . 'category#' . $category . '~*.cache', GLOB_NOSORT) as $file) {
         unlink($file);
+    }
+    foreach (glob('cache/page/' . $b . 'category#' . $category . '~*.cache.meta.json', GLOB_NOSORT) as $filemeta) {
+        unlink($filemeta);
     }
 
     // Delete type
@@ -1801,8 +1846,14 @@ function clear_post_cache($post_date, $post_tag, $post_url, $filename, $category
     if (file_exists($tp)) {
         unlink($tp);
     }
+    if (file_exists($tp . '.meta.json')) {
+        unlink($tp . '.meta.json');
+    }
     foreach (glob('cache/page/' . $b . 'type#' . $type . '~*.cache', GLOB_NOSORT) as $file) {
         unlink($file);
+    }
+    foreach (glob('cache/page/' . $b . 'type#' . $type . '~*.cache.meta.json', GLOB_NOSORT) as $filemeta) {
+        unlink($filemeta);
     }
 
     // Get cache post author
@@ -1813,8 +1864,15 @@ function clear_post_cache($post_date, $post_tag, $post_url, $filename, $category
     if (file_exists($a)) {
         unlink($a);
     }
+    if (file_exists($a . '.meta.json')) {
+        unlink($a . '.meta.json');
+    }
+
     foreach (glob('cache/page/' . $b . 'author#' . $x[1] . '~*.cache', GLOB_NOSORT) as $file) {
         unlink($file);
+    }
+    foreach (glob('cache/page/' . $b . 'author#' . $x[1] . '~*.cache.meta.json', GLOB_NOSORT) as $filemeta) {
+        unlink($filemeta);
     }
 }
 
@@ -1825,11 +1883,17 @@ function clear_page_cache($url)
     if (file_exists($p)) {
         unlink($p);
     }
+    if (file_exists($p . '.meta.json')) {
+        unlink($p . '.meta.json');
+    }
 }
 
 function clear_cache()
 {
     foreach (glob('cache/page/*.cache', GLOB_NOSORT) as $file) {
+        unlink($file);
+    }
+    foreach (glob('cache/page/*.cache.meta.json', GLOB_NOSORT) as $file) {
         unlink($file);
     }
 }
