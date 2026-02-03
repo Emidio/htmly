@@ -190,6 +190,7 @@
     <!-- Javascript -->          
     <script type="text/javascript" src="<?php echo site_url();?>system/resources/js/jquery.min.js"></script>
     <script type="text/javascript" src="<?php echo theme_path();?>js/bootstrap.min.js"></script>
-<?php if (analytics()): ?><?php echo analytics() ?><?php endif; ?>    
+<?php if (analytics()): ?><?php echo analytics() ?><?php endif; ?>
+<?php if (matomo(null, $locals)): ?><?php echo matomo(null, $locals); ?><?php endif; ?>
 </body>
 </html> 

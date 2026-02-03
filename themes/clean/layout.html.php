@@ -57,5 +57,6 @@
     <?php echo content() ?>
 </section>
 <?php if (analytics()): ?><?php echo analytics() ?><?php endif; ?>
+<?php if (matomo(null, $locals)): ?><?php echo matomo(null, $locals); ?><?php endif; ?>
 </body>
 </html>

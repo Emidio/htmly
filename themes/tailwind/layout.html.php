@@ -157,5 +157,6 @@
 	</script>
 	<script src="<?php echo theme_path();?>js/functions.js"></script>
 	<?php if (analytics()): ?><?php echo analytics() ?><?php endif; ?>
+	<?php if (matomo(null, $locals)): ?><?php echo matomo(null, $locals); ?><?php endif; ?>
 </body>
 </html>
