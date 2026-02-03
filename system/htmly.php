@@ -2461,8 +2461,8 @@ post('/admin/config/security', function () {
 // Show Config page
 get('/admin/config/performance', function () {
 
-    $user = $_SESSION[site_url()]['user'];
-    $role = user('role', $user);
+    $user = $_SESSION[site_url()]['user'] ?? null;
+    $role = user('role', $user) ?? null;
 
     if (login()) {
         config('views.root', 'system/admin/views');
