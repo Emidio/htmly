@@ -2792,7 +2792,7 @@ function slashUrl($url)
 function parseNodes($nodes, $child = null, $class = null) 
 {
     if (empty($child)) {
-        $ul = '<ul class="nav navbar-nav '.$class.'">';
+        $ul = '<ul class="nav navbar-nav '.$class.'" role="menu">';
         foreach ($nodes as $node) {
             if (isset($node->children)) {
                 $ul .= parseNode($node, true);
@@ -2827,18 +2827,18 @@ function parseNode($node, $child = null)
         if (isset($url['host']) && isset($su['host'])) {
             if ($url['host'] ==  $su['host']) {
                 if (slashUrl($url['path']) == slashUrl($req)) {
-                    $li = '<li class="item nav-item active '.$node->class.'">';
+                    $li = '<li class="item nav-item active '.$node->class.'" role="menuitem">';
                 } else  {
-                    $li = '<li class="item nav-item '.$node->class.'">';
+                    $li = '<li class="item nav-item '.$node->class.'" role="menuitem">';
                 }
             } else {
-                $li = '<li class="item nav-item '.$node->class.'">'; // Link out
+                $li = '<li class="item nav-item '.$node->class.'" role="menuitem">'; // Link out
             }
         } else {
             if (slashUrl($node->slug) == slashUrl($req)) {
-                $li = '<li class="item nav-item active '.$node->class.'">';
+                $li = '<li class="item nav-item active '.$node->class.'" role="menuitem">';
             } else {
-                $li = '<li class="item nav-item '.$node->class.'">';
+                $li = '<li class="item nav-item '.$node->class.'" role="menuitem">';
             }
         }
 
@@ -2853,18 +2853,18 @@ function parseNode($node, $child = null)
         if (isset($url['host']) && isset($su['host'])) {
             if ($url['host'] ==  $su['host']) {
                 if (slashUrl($url['path']) == slashUrl($req)) {
-                    $li = '<li class="item nav-item dropdown active '.$node->class.'">';
+                    $li = '<li class="item nav-item dropdown active '.$node->class.'" role="menuitem">';
                 } else  {
-                    $li = '<li class="item nav-item dropdown '.$node->class.'">';
+                    $li = '<li class="item nav-item dropdown '.$node->class.'" role="menuitem">';
                 }
             } else {
-                $li = '<li class="item nav-item dropdown '.$node->class.'">'; // Link out
+                $li = '<li class="item nav-item dropdown '.$node->class.'" role="menuitem">'; // Link out
             }
         } else {
             if (slashUrl($node->slug) == slashUrl($req)) {
-                $li = '<li class="item nav-item dropdown active '.$node->class.'">';
+                $li = '<li class="item nav-item dropdown active '.$node->class.'" role="menuitem">';
             } else {
-                $li = '<li class="item nav-item dropdown '.$node->class.'">';
+                $li = '<li class="item nav-item dropdown '.$node->class.'" role="menuitem">';
             }
         }
 
@@ -2938,20 +2938,20 @@ function get_menu($custom = null, $auto = null)
 
     if (!empty($posts)) {
 
-        $menu .= '<ul class="nav ' . $custom . '">';
+        $menu .= '<ul class="nav ' . $custom . '"  role="menu">';
         
         if (is_null($auto)) {
             if ($req == site_path() . '/' || stripos($req, site_path() . '/?page') !== false) {
-                $menu .= '<li class="item nav-item first active"><a class="nav-link" href="' . site_url() . '">' . config('breadcrumb.home') . '</a></li>';
+                $menu .= '<li class="item nav-item first active" role="menuitem"><a class="nav-link" href="' . site_url() . '">' . config('breadcrumb.home') . '</a></li>';
             } else {
-                $menu .= '<li class="item nav-item first"><a class="nav-link" href="' . site_url() . '">' . config('breadcrumb.home') . '</a></li>';
+                $menu .= '<li class="item nav-item first" role="menuitem"><a class="nav-link" href="' . site_url() . '">' . config('breadcrumb.home') . '</a></li>';
             }
 
             if (config('blog.enable') == 'true' ) {
                 if ($req == site_path() . '/' . blog_path() || stripos($req, site_path() . '/' . blog_path() . '?page') !== false) {
-                    $menu .= '<li class="item nav-item active"><a class="nav-link" href="' . site_url() . blog_path() . '">' . blog_string() . '</a></li>';
+                    $menu .= '<li class="item nav-item active" role="menuitem"><a class="nav-link" href="' . site_url() . blog_path() . '">' . blog_string() . '</a></li>';
                 } else {
-                    $menu .= '<li class="item nav-item"><a class="nav-link" href="' . site_url() . blog_path() . '">' . blog_string() . '</a></li>';
+                    $menu .= '<li class="item nav-item" role="menuitem"><a class="nav-link" href="' . site_url() . blog_path() . '">' . blog_string() . '</a></li>';
                 }
             }
         }
@@ -3018,12 +3018,12 @@ function get_menu($custom = null, $auto = null)
                         $classSub .= ' active';
                     }
                     $urlSub = $url . "/" . $baseSub;
-                    $menu .= '<li class="' . $classSub . '"><a class="nav-link" href="' . $urlSub . '">' . get_title_from_file($child_file) . '</a></li>';
+                    $menu .= '<li class="' . $classSub . '" role="menuitem"><a class="nav-link" href="' . $urlSub . '" aria-label="' . get_title_from_file($child_file) . '">' . get_title_from_file($child_file) . '</a></li>';
                     $iSub++;
                 }
                 $menu .= '</ul>';
             } else {
-                $menu .= '<li class="' . $class . $active .'">';
+                $menu .= '<li class="' . $class . $active .'" role="menuitem">';
                 $menu .= '<a class="nav-link" href="' . $url . '">' . ucwords($title) . '</a>';
             }
             $menu .= '</li>';
