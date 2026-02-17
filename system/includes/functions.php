@@ -2704,7 +2704,7 @@ function matomo($metadata, $locals = null)
     $matomo_url = config('matomo.url');
     $matomo_id = config('matomo.site.id');
     $matomo_track_type = config('matomo.track.type');
-    if (config('matomo.cookies') == 'no') { 
+    if (config('matomo.cookies') == 'false') { 
         $matomo_nocookies = "_paq.push(['disableCookies']);";
     }
     else {
@@ -2755,7 +2755,7 @@ function matomo($metadata, $locals = null)
             }
 
             $t->setIp(client_ip());
-            if (config('matomo.cookies') == 'no') {
+            if (config('matomo.cookies') == 'false') {
                 $t->disableCookieSupport();
             }
 
