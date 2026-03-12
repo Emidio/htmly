@@ -68,7 +68,31 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
 
   RewriteEngine on
-  
+
+
+# Uncomment the following lines to block basic WordPress scanners
+# This will save some bandwith and CPU, and unclutter statistics
+
+# Uncomment for WordPress wlwmanifest.xml search
+# RewriteRule (^|/)wlwmanifest\.xml$ - [F,L,NC]
+
+# Uncomment forWordPress xmlrpc.php search
+# RewriteRule (^|/)xmlrpc\.php$ - [F,L,NC]
+
+# Uncomment for WordPress login and cron
+# RewriteCond %{REQUEST_URI} !wp-login\.php [NC]
+# RewriteCond %{REQUEST_URI} !wp-cron\.php [NC]
+
+# Uncomment for generic WordPress path - have /wp- somewhere and ends with .php
+# RewriteRule (^|/)wp-[^/]+\.php$ - [F,L,NC]
+
+
+
+
+
+# Uncomment the following to enable Matomo server side javascript helper tracking
+  RewriteRule ^(.*/)?system/resources/js/set-screen\.js$ $1system/resources/php/matomo-jstracker.php [L]
+
 # Uncomment the following to redirect all visitors to the https version
 # RewriteCond %{HTTPS} off
 # RewriteRUle (.*) https://www.example.com/$1 [R=301,L]
