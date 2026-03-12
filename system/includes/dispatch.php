@@ -568,17 +568,22 @@ function normalize_titles_type($type, $canonical = null)
 
 
 function generate_meta_info($locals) {
+    // if metadata from cache files are received, just returns same metadata
+    if (isset($locals['data']) && $locals['data'] == 'metadata') {
+        return $locals;    
+    }
+
     if (is_array($locals) && count($locals)) {
         extract($locals, EXTR_SKIP);
     }
-    
+
     // Normalize type
     $normalized_type = normalize_titles_type(
         isset($type) ? $type : null,
-        isset($canonical) ? $canonical : null
+        $_SERVER['REQUEST_URI'] // previously passing $canonical, but it fails when search 404 (wrong canonical) TODO: Emidio to be fixed in 404 search
     );
-    
-    // Extract menu name from static page or canonical URL
+
+    // Extract menu name from static page or REQUEST_URI
     $filename = "content/data/menu.json";
     if (file_exists($filename)) {
         $menu_content = file_get_data($filename) ;
@@ -587,13 +592,9 @@ function generate_meta_info($locals) {
 
     // Get language from config
     $language = config('language');
-    
-    if (isset($canonical)) {
-        $slug = parse_url($canonical, PHP_URL_PATH);
-    }
-    else {
-        $slug = '';    
-    }
+
+    // previously passing $canonical, but it fails when search 404 (wrong canonical) TODO: Emidio to be fixed in 404 search
+    $slug = trim($_SERVER['REQUEST_URI'], '/');
     
     // Save metadata in separate cache file
     // $metafile = $cachefile . '.meta.json';
@@ -607,8 +608,18 @@ function generate_meta_info($locals) {
         'type' => $normalized_type['type'],
         'subtype' => $normalized_type['subtype'],
         'menu' => isset($menu_flat[$slug]) ? $menu_flat[$slug] : '',
-        'language' => $language
+        'language' => $language,
+        'search' => '',
+        'searchresults' => 0,
+        'data' => 'metadata'
     );
+    
+    if ($normalized_type['type'] == 'search') {
+        $tmp = explode('/', $slug);
+        if (isset($tmp[1])) {
+            $metadata['search'] = urldecode($tmp[1]);
+        }
+    }
 
     return $metadata;
 }

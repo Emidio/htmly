@@ -217,32 +217,13 @@
   <div class="form-group row">
     <label for="matomo-site-id" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Site_Id');?></label>
     <div class="col-sm-10">
-      <input type="text" name="-config-matomo.site.id" class="form-control" id="matomo.site.id" value="<?php echo valueMaker(config('matomo.site.id'));?>" placeholder="<?php echo i18n('widget_key_placeholder');?>">
+      <input type="text" name="-config-matomo.site.id" class="form-control" id="matomo.site.id" value="<?php echo valueMaker(config('matomo.site.id'));?>" placeholder="<?php echo i18n('matomo_asn_siteid_placeholder');?>">
     </div>
   </div>
   <div class="form-group row">
     <label for="matomo-url" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Url');?></label>
     <div class="col-sm-10">
       <input type="text" name="-config-matomo.url" class="form-control" id="matomo.url" value="<?php echo valueMaker(config('matomo.url'));?>" placeholder="<?php echo i18n('widget_key_placeholder');?>">
-    </div>
-  </div>
-  <div class="form-group row">
-    <label class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Track_Type');?></label>
-    <div class="col-sm-10">
-      <div class="col-sm-10">
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="-config-matomo.track.type" id="matomo.track.type1" value="js" <?php if (config('matomo.track.type') === 'js'):?>checked<?php endif;?>>
-          <label class="form-check-label" for="matomo.track.type1">
-            <?php echo i18n('matomo_track_type_js');?>
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="-config-matomo.track.type" id="matomo.track.type2" value="php" <?php if (config('matomo.track.type') === 'php' || is_null(config('matomo.track.type'))):?>checked<?php endif;?>>
-          <label class="form-check-label" for="matomo.track.type2">
-            <?php echo i18n('matomo_track_type_php');?>
-          </label>
-        </div>
-      </div>
     </div>
   </div>
   <div class="form-group row">
@@ -270,8 +251,104 @@
       </div>
     </div>
   </div>
-  
-  
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Track_Type');?></label>
+    <div class="col-sm-10">
+      <div class="col-sm-10">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="-config-matomo.track.type" id="matomo.track.type1" value="js" <?php if (config('matomo.track.type') === 'js'):?>checked<?php endif;?>>
+          <label class="form-check-label" for="matomo.track.type1">
+            <?php echo i18n('matomo_track_type_js');?>
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="-config-matomo.track.type" id="matomo.track.type2" value="php" <?php if (config('matomo.track.type') === 'php' || is_null(config('matomo.track.type'))):?>checked<?php endif;?>>
+          <label class="form-check-label" for="matomo.track.type2">
+            <?php echo i18n('matomo_track_type_php');?>
+          </label>
+          
+          <div class="form-group row">
+            <span for="matomo-asn-bot" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_ASN_Bot');?></span>
+            <div class="col-sm-10">
+              <input type="text" name="-config-matomo.asnbot" class="form-control" id="matomo.asnbot" value="<?php echo valueMaker(config('matomo.asnbot'));?>" placeholder="<?php echo i18n('matomo_asn_bot_placeholder');?>">
+              <small><em><?php echo i18n('matomo_php_only_hint');?></em></small>
+        </div>
+      </div>
+          <div class="form-group row">
+            <span for="matomo-asn-block" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_ASN_Block');?></span>
+            <div class="col-sm-10">
+              <input type="text" name="-config-matomo.asnblock" class="form-control" id="matomo.asnblock" value="<?php echo valueMaker(config('matomo.asnblock'));?>" placeholder="<?php echo i18n('matomo_asn_block_placeholder');?>">
+              <small><em><?php echo i18n('matomo_php_only_hint');?></em></small>
+            </div>
+          </div>
+          
+          <div class="form-group row">
+              <span for="matomo-cronjob" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_PageViews');?></span>
+              <div class="col-sm-10">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="-config-matomo.pageviews" id="matomo.pageviews.all" value="false" <?php if (config('matomo.pageviews') === 'all' || is_null(config('matomo.pageviews'))):?>checked<?php endif;?>>
+                  <label class="form-check-label" for="matomo.pageviews.all">
+                    <?php echo i18n('matomo_use_pageviews_all');?>
+                  </label>
+    </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="-config-matomo.pageviews" id="matomo.pageviews.limit" value="true" <?php if (config('matomo.pageviews') === 'limit'):?>checked<?php endif;?>>
+                  <label class="form-check-label" for="matomo.pageviews.limit">
+                    <?php echo i18n('matomo_use_pageviews_limit');?>
+                  </label>
+                </div>
+              </div>
+  </div>
+          
+  <div class="form-group row">
+            <span for="matomo-visitortype-dimension" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_VisitorType');?></span>
+    <div class="col-sm-10">
+              <input type="text" name="-config-matomo.visitortype.dimension" class="form-control" id="matomo.visitortype.dimension" value="<?php echo valueMaker(config('matomo.visitortype.dimension'));?>" placeholder="<?php echo i18n('matomo_id_placeholder');?>">
+              <small><em><?php echo i18n('matomo_visitortype_hint');?></em></small>
+            </div>
+          </div>
+          
+          <div class="form-group row">
+            <span for="matomo-provider-dimension" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Provider');?></span>
+            <div class="col-sm-10">
+              <input type="text" name="-config-matomo.provider.dimension" class="form-control" id="matomo.provider.dimension" value="<?php echo valueMaker(config('matomo.provider.dimension'));?>" placeholder="<?php echo i18n('matomo_id_placeholder');?>">
+              <small><em><?php echo i18n('matomo_provider_hint');?></em></small>
+    </div>
+  </div>
+          
+  <div class="form-group row">
+            <span for="matomo-bots-siteid" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Bots_SiteID');?></span>
+    <div class="col-sm-10">
+              <input type="text" name="-config-matomo.bots.siteid" class="form-control" id="matomo.bots.siteid" value="<?php echo valueMaker(config('matomo.bots.siteid'));?>" placeholder="<?php echo i18n('matomo_asn_siteid_placeholder');?>">
+              <small><em><?php echo i18n('matomo_bots_siteid_hint');?></em></small>
+            </div>
+          </div>
+          
+          <div class="form-group row">
+              <span for="matomo-cronjob" class="col-sm-2 col-form-label"><?php echo i18n('Matomo_Cronjob');?></span>
+      <div class="col-sm-10">
+        <div class="form-check">
+                  <input class="form-check-input" type="radio" name="-config-matomo.cronjob" id="matomo.cronjob.use1" value="false" <?php if (config('matomo.cronjob') === 'false' || is_null(config('matomo.cronjob'))):?>checked<?php endif;?>>
+                  <label class="form-check-label" for="matomo.cronjob.use1">
+                    <?php echo i18n('matomo_cronjob_no');?>
+          </label>
+        </div>
+        <div class="form-check">
+                  <input class="form-check-input" type="radio" name="-config-matomo.cronjob" id="matomo.cronjob.use2" value="true" <?php if (config('matomo.cronjob') === 'true'):?>checked<?php endif;?>>
+                  <label class="form-check-label" for="matomo.cronjob.use2">
+                    <?php echo i18n('matomo_cronjob_yes');?>
+          </label>
+        </div>
+      </div>
+    </div>
+
+          <em><?php echo i18n('Matomo_Notification');?></em>
+  </div>
+      </div>
+    </div>
+  </div>
+
+
   <br>
   <h4><?php echo i18n('Social_Media');?></h4>
   <hr>

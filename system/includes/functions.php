@@ -2703,22 +2703,39 @@ EOF;
 }
 
 
+
 // Matomo Analytics
-function matomo($metadata, $locals = null)
+function matomo($locals = null)
 {
+    if ($locals === null) {
+        if (config('matomo.url') && config('matomo.site.id') && config('matomo.track.type')) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // include matomo functions
+    include_once('system/includes/matomo-functions.php');
+            
     $matomo_url = config('matomo.url');
     $matomo_id = config('matomo.site.id');
     $matomo_track_type = config('matomo.track.type');
+
+    $matomo_pagetitle = matomo_pagetitle($locals); // function matomo_pagetitle -> send $locals, get fancy pagetitle with prefix
+
+    if ($matomo_url && $matomo_id) {
+        // Matomo JS tracking - publish JS on the page
+        if ($matomo_track_type == "js") {
+            $matomo_nocookies = '';
     if (config('matomo.cookies') == 'false') { 
         $matomo_nocookies = "_paq.push(['disableCookies']);";
     }
-    else {
-        $matomo_nocookies = "";
+            if ($matomo_pagetitle != '') {
+                $matomo_pagetitle = "_paq.push(['setDocumentTitle', '" . $matomo_pagetitle . "']);";
     }
-
     
-    if ($matomo_url && $matomo_id) {
-        if ($matomo_track_type == "js") {
             $script = "
                 <!-- Matomo -->
                 <script>
@@ -2730,6 +2747,7 @@ function matomo($metadata, $locals = null)
                     var u=\"" . slashUrl($matomo_url) . "\";
                     _paq.push(['setTrackerUrl', u+'matomo.php']);
                     _paq.push(['setSiteId', '" . $matomo_id . "']);
+                    " . $matomo_pagetitle . "
                     " . $matomo_nocookies . "
                     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
                     g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
@@ -2740,35 +2758,122 @@ function matomo($metadata, $locals = null)
             return $script;
         }
         else {
-            include_once('system/vendor/matomo/matomo-php-tracker/MatomoTracker.php');
+            if (!isset($_SESSION['matomo'])) {
+                matomo_debug('MTM001', 'Setting session first time.');
             
-            // Initialize tracker
-            $t = new MatomoTracker((int)config('matomo.site.id'), config('matomo.url'));
+                // set session here, first time or no cookie support (so differenet session on each page load) - save json for later
+                $_SESSION['matomo'] = array();
+                $_SESSION['matomo']['pagetitle'] = $matomo_pagetitle;
 
-            // Optional: Set auth token (required for some features like custom IP or user ID)
-            $t->setTokenAuth(config('matomo.authtoken'));
-            
-            if ($locals) {
+                // adding search info
                 $metadata = generate_meta_info($locals);
-            }
-
-            $pagePrefix = $metadata['prefix'] ?? '';
-            $pageTitle = trim($pagePrefix . $metadata['title']);
-
-            if (substr($pageTitle, -strlen(' - ' . blog_title())) === ' - ' . blog_title()) {
-                $pageTitle = substr($pageTitle, 0, -strlen(' - ' . blog_title()));
-            }
-
-            $t->setIp(client_ip());
-            if (config('matomo.cookies') == 'false') {
-                $t->disableCookieSupport();
-            }
-
-            // Track page view
-            $t->doTrackPageView($pageTitle);
             
-            return "";
+                $_SESSION['matomo']['pagetype'] = $metadata['type'];
+                $_SESSION['matomo']['search'] = $metadata['search'];
+                if (isset($locals['posts']) && $metadata['type'] == 'search') {
+                    $_SESSION['matomo']['searchresults'] = count($locals['posts']);
+                }
+                else {
+                    $_SESSION['matomo']['searchresults'] = 0;
+                }
+
+                $matomo = matomo_set_values($_SESSION['matomo']);
+
+                matomo_set_session($matomo);
+                // saving session file and NOT sendong stats - stats are sent by JS file, or later by loop/cronjob
+                matomo_set_sessionfile(session_id(), $matomo);
+
+                // here we check if it is by sure a bot - if it is, it can wait and we loop on stats files to be sent
+                // loop to send all files older than 5 minutes
+                if ($_SESSION['matomo']['isbot'] == 1) {
+                    matomo_debug('MTM004', 'Loop sessionfiles.');
+                    matomo_sendsessionfiles(5);
+                }
+
+                matomo_sendsessionfiles(5);
+            }
+            else {
+                // session already set, go on sending stats - this is not first page visit of the session
+                matomo_debug('MTM002', 'Session set, using it.');
+
+                // setting page specific values (no need to change session common values)
+                $_SESSION['matomo']['url'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+                $_SESSION['matomo']['referer'] = $_SERVER['HTTP_REFERER'] ?? '';
+                $_SESSION['matomo']['pagetitle'] = $matomo_pagetitle;
+
+                // adding search info
+                $metadata = generate_meta_info($locals);
+                
+                $_SESSION['matomo']['pagetype'] = $metadata['type'];
+                $_SESSION['matomo']['search'] = $metadata['search'];
+                if (isset($locals['posts']) && $metadata['type'] == 'search') {
+                    $_SESSION['matomo']['searchresults'] = count($locals['posts']);
+                }
+                else {
+                    $_SESSION['matomo']['searchresults'] = 0;
+                }
+
+                matomo_debug('MTM003', 'Sending data.');
+                matomo_track($_SESSION['matomo']);
+            }
+
+
+            $script = "
+            <script language=\"javascript\">
+                <!-- Browser dimensions helper -->
+                (function () {
+                    
+                  var data = {
+                    screen: {
+                      width: screen.width,
+                      height: screen.height,
+                      colorDepth: screen.colorDepth,
+                      pixelRatio: window.devicePixelRatio || 1
+                    },
+                    browser: {
+                      width: window.innerWidth,
+                      height: window.innerHeight,
+                      outerWidth: window.outerWidth,
+                      outerHeight: window.outerHeight,
+                      scrollX: window.scrollX,
+                      scrollY: window.scrollY
+            }
+                  };
+
+                  var xhr = new XMLHttpRequest();
+                  xhr.open('POST', '/system/resources/js/set-screen.js?_=' + Date.now(), true);
+                  xhr.withCredentials = true;
+                  xhr.setRequestHeader('Content-Type', 'application/json');
+
+                  xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                      if (xhr.status === 200) {
+                        console.log('Risposta:', xhr.responseText);
+                      } else {
+                        console.error('Errore nella chiamata:', xhr.status);
+            }
+                    }
+                  };
+                  xhr.send(JSON.stringify(data));
+                })();
+
+                <!-- End Browser dimensions helper -->
+            </script>
+            ";
+            
+            return $script;
         }
+        }
+}
+
+
+function matomo_asn_block($ip) {
+    // include matomo functions
+    include_once('system/includes/matomo-functions.php');
+    $asn = getASN($ip);
+    if ($asn['bad']) {
+        header('HTTP/1.1 403 Forbidden');
+        die();
     }
 }
 
@@ -3748,6 +3853,12 @@ function head_contents()
 // File cache
 function file_cache($request)
 {
+    
+    // Matomo ASN block feature - checks before serving page or cache
+    if (config('matomo.url') != '' && config('matomo.track.type') == 'php' && config('matomo.asnblock') != '') {
+        matomo_asn_block(client_ip());    
+    }
+    
     if (config('cache.off') == 'true') return;
     $hour = config('cache.expiration');
     if (empty($hour)) {
@@ -3773,7 +3884,7 @@ function file_cache($request)
                 $cache_metadata = json_decode(file_get_contents($metafile), true);
             }
 
-            // if Matomo analytics backend is active
+            // if Matomo analytics backend is active sends stats before serving the cache file
             if (config('matomo.url') && config('matomo.site.id') && config('matomo.track.type') == 'php') {
                 matomo($cache_metadata);
             }

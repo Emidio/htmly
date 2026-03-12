@@ -4386,7 +4386,7 @@ get('/'. permalink_type() .'/:name', function ($name) {
         header("location: $redir", TRUE, 301);
     }
 
-    if (config("views.counter") != "true") {
+    if (config("views.counter") != "true" || config('matomo.pageviews') == 'limit') {
         if (!login()) {
             file_cache($_SERVER['REQUEST_URI']);
         }
@@ -4947,7 +4947,7 @@ get('/:static', function ($static) {
     } else {
 
         $pages = '';
-        if (config("views.counter") != "true") {
+        if (config("views.counter") != "true" || config('matomo.pageviews') == 'limit') {
             if (!login()) {
                 file_cache($_SERVER['REQUEST_URI']);
             }
@@ -5339,7 +5339,7 @@ get('/:static/:sub', function ($static, $sub) {
     }
 
     $sub_pages = '';
-    if (config("views.counter") != "true") {
+    if (config("views.counter") != "true" || config('matomo.pageviews') == 'limit') {
         if (!login()) {
             file_cache($_SERVER['REQUEST_URI']);
         }
@@ -5659,7 +5659,7 @@ get('/:year/:month/:name', function ($year, $month, $name) {
         header("location: $redir", TRUE, 301);
     }
 
-    if (config("views.counter") != "true") {
+    if (config("views.counter") != "true" || config('matomo.pageviews') == 'limit') {
         if (!login()) {
             file_cache($_SERVER['REQUEST_URI']);
         }
