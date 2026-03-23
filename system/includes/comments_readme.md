@@ -11,7 +11,7 @@ Some major fixes to comment system:
 * added subscription verification system
 
 ## 2026-03-22
-Reworked functions to match HTMLy coding style, changed local() to comments. Comment system has been integrated in existing themes (some css to adapt to the theme layout added), and added a system messages function (to give messages during subsciption/unsubscription process) - it can be used for other integrations.
+Reworked functions to match HTMLy coding style, changed local() to comments. Comment system has been integrated in existing themes (some css to adapt to the theme layout added), and added a system messages function (to give messages during subsciption/unsubscription processes) - it can be used for other widgets and functionalites integration.
 
 Also, comments configuration is now in config.ini.
 
@@ -29,4 +29,3 @@ Users can ask for email notification when a new comment is published in a subscr
 Notification email are sent on comment publish (if validation is enabled) or comment insert (if moderation is disabled, not recommended).
 
 **TODO**: limit comment insert by time from same IP address
-
