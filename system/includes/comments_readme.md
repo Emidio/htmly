@@ -10,6 +10,11 @@ Some major fixes to comment system:
 * improved antispam system
 * added subscription verification system
 
+## 2026-03-22
+Reworked functions to match HTMLy coding style, changed local() to comments. Comment system has been integrated in existing themes (some css to adapt to the theme layout added), and added a system messages function (to give messages during subsciption/unsubscription process) - it can be used for other integrations.
+
+Also, comments configuration is now in config.ini.
+
 ### Antispam
 Antispam work using a honeyspot and js/token verification
 
@@ -25,4 +30,3 @@ Notification email are sent on comment publish (if validation is enabled) or com
 
 **TODO**: limit comment insert by time from same IP address
 
-**TODO**: reworking backend functions to use HTMLy basic functions and avoid code duplication
